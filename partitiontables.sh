@@ -20,7 +20,7 @@ daily_history_min=90
 #
 # How long to keep the monthly history (months)
 #
-monthy_history_min=12
+monthly_history_min=12
 
 #
 # Years to create the monthly partitions for
@@ -92,7 +92,7 @@ while getopts "m:h:u:p:d:y:?h" flag; do
 			;;
 		m)	h=$OPTARG
 			if [ $h -gt 0 ] 2>/dev/null; then
-				monthy_history_min=$h
+				monthly_history_min=$h
 			else
 				echo "Invalid monthly history min, exiting"
 				exit 1
@@ -332,7 +332,7 @@ BEGIN
 	DECLARE OLDCLOCK timestamp;
 	DECLARE PARTITIONNAME varchar(16);
 	DECLARE CLOCK int;
-	SET @minmonths = $monthy_history_min;
+	SET @minmonths = $monthly_history_min;
 	SET @maxmonths = @minmonths+24;
 	SET @i = @maxmonths;
 	droploop: LOOP
