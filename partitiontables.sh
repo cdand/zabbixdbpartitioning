@@ -205,8 +205,9 @@ for i in $MONTHLY; do
 		[ $y -eq $last_year ] && last_month=$((cur_month+1))
 		for m in `seq 1 $last_month`; do
 			[ $m -lt 10 ] && m="0$m"
+			ms=`date +"%Y-%m-01" -d "$m/01/$y +1 month"`
 			pname="p${y}${m}"
-			echo -n "PARTITION $pname  VALUES LESS THAN (UNIX_TIMESTAMP(\"$y-$m-01 00:00:00\"))" >>$SQL
+			echo -n "PARTITION $pname  VALUES LESS THAN (UNIX_TIMESTAMP(\"$ms 00:00:00\"))" >>$SQL
 			[ $m -ne $last_month -o $y -ne $last_year ] && echo -n "," >>$SQL
 			echo -ne "\n" >>$SQL
 		done
@@ -220,7 +221,7 @@ for i in $DAILY; do
 	echo "SELECT '$i';" >>$SQL
 	echo "ALTER TABLE $i PARTITION BY RANGE( clock ) (" >>$SQL
 	for d in `seq -$daily_history_min 2`; do
-		ds=`date +"%Y-%m-%d" -d "$d day"`
+		ds=`date +"%Y-%m-%d" -d "$d day +1 day"`
 		pname=`date +"%Y%m%d" -d "$d day"`
 		echo -n "PARTITION p$pname  VALUES LESS THAN (UNIX_TIMESTAMP(\"$ds 00:00:00\"))" >>$SQL
 		[ $d -ne 2 ] && echo -n "," >>$SQL
