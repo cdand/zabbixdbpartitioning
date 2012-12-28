@@ -165,8 +165,8 @@ read yn
 DAILY="history history_log history_str history_text history_uint"
 DAILY_IDS="itemid id itemid id itemid"
 
-MONTHLY="acknowledges alerts auditlog events service_alarms"
-MONTHLY_IDS="acknowledgeid alertid auditid eventid servicealarmid"
+MONTHLY="trends trends_uint"
+MONTHLY_IDS=""
 
 TABLES="$DAILY $MONTHLY"
 IDS="$DAILY_IDS $MONTHLY_IDS"
@@ -189,12 +189,6 @@ for i in $TABLES; do
 			echo "ALTER TABLE $i DROP KEY history_text_2;" >>$SQL
 			echo "ALTER TABLE $i ADD KEY history_text_2 (itemid, clock);" >>$SQL
 			echo "ALTER TABLE $i DROP PRIMARY KEY ;" >>$SQL
-			id=`echo $IDS | cut -f$cnt -d" "`
-			echo "ALTER TABLE $i ADD KEY ${i}id ($id);" >>$SQL
-			;;
-
-		acknowledges|alerts|auditlog|events|service_alarms)
-			echo "ALTER TABLE $i DROP PRIMARY KEY;" >>$SQL
 			id=`echo $IDS | cut -f$cnt -d" "`
 			echo "ALTER TABLE $i ADD KEY ${i}id ($id);" >>$SQL
 			;;
