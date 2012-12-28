@@ -12,6 +12,28 @@
 # assuming that the cronjob has been properly entered.
 #
 
+#
+# How long to keep the daily history
+#
+daily_history_min=90
+
+#
+# How long to keep the monthly history (months)
+#
+monthy_history_min=12
+
+#
+# Years to create the monthly partitions for
+#
+first_year=`date +"%Y"`
+last_year=$first_year
+cur_month=`date +"%m"`
+if [ $cur_month -eq 12 ]; then
+	last_year=$((first_year+1))
+	cur_month=1
+fi
+
+y=`date +"%Y"`
 
 function usage {
 cat <<_EOF_
@@ -21,8 +43,8 @@ $0	[-h host][-u user][-p password][-d min_days][-y startyear]
 	-h host		database host
 	-u user		db user
 	-p password	user password
-	-d min_days	Minimum number of days of history to keep
-	-m min_months	Minimum number of months to keep trends
+	-d min_days	Minimum number of days of history to keep (default: $daily_history_min)
+	-m min_months	Minimum number of months to keep trends (default: $monthly_history_min)
 	-y startyear	First year to set up with partitions
 
 
@@ -50,28 +72,6 @@ _EOF_
 
 SQL="/tmp/partition.sql"
 
-#
-# How long to keep the daily history
-#
-daily_history_min=90
-
-#
-# How long to keep the monthly history (months)
-#
-monthy_history_min=12
-
-#
-# Years to create the monthly partitions for
-#
-first_year=`date +"%Y"`
-last_year=$first_year
-cur_month=`date +"%m"`
-if [ $cur_month -eq 12 ]; then
-	last_year=$((first_year+1))
-	cur_month=1
-fi
-
-y=`date +"%Y"`
 	
 DUMP_FILE=/tmp/zabbix.sql
 DBHOST=localhost
