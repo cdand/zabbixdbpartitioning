@@ -127,7 +127,7 @@ shift $((OPTIND-1))
 echo "Ready to partition tables."
 
 if [ $SIMULATE = 0 ]; then
-	if [ $NONINTERACTIVE = 1 ]
+	if [ $NONINTERACTIVE = 1 ]; then
 		mysql -B -h $DBHOST -e "GRANT CREATE ROUTINE ON zabbix.* TO '$DBUSER'@'localhost';"
 	else
 		echo -e "\nReady to update permissions of Zabbix user to create routines\n"
