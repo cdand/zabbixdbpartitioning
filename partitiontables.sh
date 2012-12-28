@@ -396,9 +396,9 @@ if [ "$yn" != "n" -a "$yn" != "N" ]; then
 	cp $conf ${conf}.bak
 	sed  -i "s/^# DisableHousekeeping=0/DisableHousekeeping=1/" $conf
 	sed  -i "s/^DisableHousekeeping=0/DisableHousekeeping=1/" $conf
-	/etc/init.d/zabbix_server stop
+	/etc/init.d/zabbix-server stop
 	sleep 5
-	/etc/init.d/zabbix_server start
+	/etc/init.d/zabbix-server start
 fi
 
 tmpfile=/tmp/cron$$
