@@ -129,6 +129,12 @@ echo "Ready to partition tables."
 if [ $SIMULATE = 0 ]; then
 	if [ $NONINTERACTIVE = 1 ]; then
 		mysql -B -h $DBHOST -e "GRANT CREATE ROUTINE ON zabbix.* TO '$DBUSER'@'localhost';"
+		echo "GRANT LOCK TABLES ON zabbix.* TO '${DBUSER}'@'${DBHOST}' IDENTIFIED BY '${DBPASS}';" | mysql -h${DBHOST} -u${DBADMINUSER} --password=${DBADMINPASS}
+		mysqldump --opt -h ${DBHOST} -u ${DBUSER} -p${DBPASS} zabbix --result-file=${DUMP_FILE}
+		rc=$?
+		if [ $rc -ne 0 ]; then
+			echo "Error during mysqldump, exit code: $rc"
+		fi
 	else
 		echo -e "\nReady to update permissions of Zabbix user to create routines\n"
 		echo -n "Enter root DB user: "
@@ -137,34 +143,34 @@ if [ $SIMULATE = 0 ]; then
 		read DBADMINPASS
 		mysql -B -h $DBHOST -u $DBADMINUSER -p$DBADMINPASS -e "GRANT CREATE ROUTINE ON zabbix.* TO '$DBUSER'@'localhost';"
 		echo -e "\n"
-	fi
 
-	echo -ne "\nDo you want to backup the database (recommended) (Y/n): "
-	read yn
-	if [ "$yn" != "n" -a "$yn" != "N" ]; then
-		echo -e "\nEnter output file, press return for default of $DUMP_FILE"
-		read df
-		[ "$df" != "" ] && DUMP_FILE=$df
-
-		#
-		# Lock tables is needed for a good mysqldump
-		#
-		echo "GRANT LOCK TABLES ON zabbix.* TO '${DBUSER}'@'${DBHOST}' IDENTIFIED BY '${DBPASS}';" | mysql -h${DBHOST} -u${DBADMINUSER} --password=${DBADMINPASS}
-
-		mysqldump --opt -h ${DBHOST} -u ${DBUSER} -p${DBPASS} zabbix --result-file=${DUMP_FILE}
-		rc=$?
-		if [ $rc -ne 0 ]; then
-			echo "Error during mysqldump, rc: $rc"
-			echo "Do you wish to continue (y/N): "
-			read yn
-			[ "yn" != "y" -a "$yn" != "Y" ] && exit
-		else
-			echo "Mysqldump succeeded!, proceeding with upgrade..."
-		fi
-	else
-		echo "Are you certain you have a backup (y/N): "
+		echo -ne "\nDo you want to backup the database (recommended) (Y/n): "
 		read yn
-		[ "$yn" != 'y' -a "$yn" != "Y" ] && exit
+		if [ "$yn" != "n" -a "$yn" != "N" ]; then
+			echo -e "\nEnter output file, press return for default of $DUMP_FILE"
+			read df
+			[ "$df" != "" ] && DUMP_FILE=$df
+
+			#
+			# Lock tables is needed for a good mysqldump
+			#
+			echo "GRANT LOCK TABLES ON zabbix.* TO '${DBUSER}'@'${DBHOST}' IDENTIFIED BY '${DBPASS}';" | mysql -h${DBHOST} -u${DBADMINUSER} --password=${DBADMINPASS}
+
+			mysqldump --opt -h ${DBHOST} -u ${DBUSER} -p${DBPASS} zabbix --result-file=${DUMP_FILE}
+			rc=$?
+			if [ $rc -ne 0 ]; then
+				echo "Error during mysqldump, rc: $rc"
+				echo "Do you wish to continue (y/N): "
+				read yn
+				[ "yn" != "y" -a "$yn" != "Y" ] && exit
+			else
+				echo "Mysqldump succeeded!, proceeding with upgrade..."
+			fi
+		else
+			echo "Are you certain you have a backup (y/N): "
+			read yn
+			[ "$yn" != 'y' -a "$yn" != "Y" ] && exit
+		fi
 	fi
 fi
 
