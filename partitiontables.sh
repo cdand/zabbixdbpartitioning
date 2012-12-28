@@ -40,12 +40,13 @@ cat <<_EOF_
 
 $0	[-h host][-u user][-p password][-d min_days][-y startyear]
 
-	-h host		database host
-	-u user		db user
-	-p password	user password
-	-d min_days	Minimum number of days of history to keep (default: $daily_history_min)
-	-m min_months	Minimum number of months to keep trends (default: $monthly_history_min)
-	-y startyear	First year to set up with partitions
+	-h host			database host
+	-u user			db user
+	-p password		user password
+	-d min_days		Minimum number of days of history to keep (default: $daily_history_min)
+	-m min_months		Minimum number of months to keep trends (default: $monthly_history_min)
+	-y startyear		First year to set up with partitions
+	-n noninteractive	Run without questions - careful, make sure you know what is going to happen
 
 
 After running this script, don't forget to disable housekeeping if
@@ -72,16 +73,16 @@ _EOF_
 
 SQL="/tmp/partition.sql"
 
-	
 DUMP_FILE=/tmp/zabbix.sql
 DBHOST=localhost
-DBUSER=root
-DBPASS=
-while getopts "m:h:u:p:d:y:?h" flag; do
+DBUSER=zabbix
+DBPASS=zabbix
+while getopts "m:n:h:u:p:d:y:?h" flag; do
 	case $flag in
 		h)	DBHOST=$OPTARG ;;
 		u)	DBUSER=$OPTARG ;;
 		p)	DBPASS=$OPTARG ;;
+		n)	INTERACTIVE=1  ;;
 		d)	h=$OPTARG
 			if [ $h -gt 0 ] 2>/dev/null; then
 				daily_history_min=$h
