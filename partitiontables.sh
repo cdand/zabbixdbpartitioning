@@ -43,7 +43,7 @@ y=`date +"%Y"`
 function usage {
 cat <<_EOF_
 
-$0	[-h host][-u user][-p password][-d min_days][-y startyear]
+$0	[-h host][-u user][-p password][-d min_days][-y startyear][-n][-s][-e email_address]
 
 	-h host			database host
 	-u user			db user
@@ -51,7 +51,7 @@ $0	[-h host][-u user][-p password][-d min_days][-y startyear]
 	-d min_days		Minimum number of days of history to keep (default: $daily_history_min)
 	-m min_months		Minimum number of months to keep trends (default: $monthly_history_min)
 	-y startyear		First year to set up with partitions
-	-n noninteractive	Run without questions - careful, make sure you know what is going to happen
+	-n noninteractive	Run without questions - careful, make sure you know what is going to happen. Needs my.cnf with correct permissions.
 	-s simulate		Create SQL file that would be executed for examination
 	-e email		Email address to receive partition update report (default: $EMAIL)
 
@@ -86,7 +86,7 @@ DBUSER=zabbix
 DBPASS=zabbix
 SIMULATE=0
 NONINTERACTIVE=0
-while getopts "m:n:s:e:h:u:p:d:y:?h" flag; do
+while getopts "m:nse:h:u:p:d:y:?h" flag; do
 	case $flag in
 		h)	DBHOST=$OPTARG ;;
 		u)	DBUSER=$OPTARG ;;
@@ -127,13 +127,17 @@ shift $((OPTIND-1))
 echo "Ready to partition tables."
 
 if [ $SIMULATE = 0 ]; then
-	echo -e "\nReady to update permissions of Zabbix user to create routines\n"
-	echo -n "Enter root DB user: "
-	read DBADMINUSER
-	echo -n "Enter $DBADMINUSER password: "
-	read DBADMINPASS
-	mysql -B -h localhost -u $DBADMINUSER -p$DBADMINPASS -e "GRANT CREATE ROUTINE ON zabbix.* TO 'zabbix'@'localhost';"
-	echo -e "\n"
+	if [ $NONINTERACTIVE = 1 ]
+		mysql -B -h $DBHOST -e "GRANT CREATE ROUTINE ON zabbix.* TO '$DBUSER'@'localhost';"
+	else
+		echo -e "\nReady to update permissions of Zabbix user to create routines\n"
+		echo -n "Enter root DB user: "
+		read DBADMINUSER
+		echo -n "Enter $DBADMINUSER password: "
+		read DBADMINPASS
+		mysql -B -h $DBHOST -u $DBADMINUSER -p$DBADMINPASS -e "GRANT CREATE ROUTINE ON zabbix.* TO '$DBUSER'@'localhost';"
+		echo -e "\n"
+	fi
 
 	echo -ne "\nDo you want to backup the database (recommended) (Y/n): "
 	read yn
