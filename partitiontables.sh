@@ -43,7 +43,7 @@ y=`date +"%Y"`
 function usage {
 cat <<_EOF_
 
-$0	[-h host][-u user][-p password][-d min_days][-y startyear][-n][-s][-e email_address]
+$0	[-h host][-u user][-p password][-d min_days][-y startyear][-n][-s][-e email_address][-b]
 
 	-h host			database host
 	-u user			db user
@@ -52,6 +52,7 @@ $0	[-h host][-u user][-p password][-d min_days][-y startyear][-n][-s][-e email_a
 	-m min_months		Minimum number of months to keep trends (default: $monthly_history_min)
 	-y startyear		First year to set up with partitions
 	-n noninteractive	Run without questions - careful, make sure you know what is going to happen. Needs my.cnf with correct permissions.
+	-b backup		Create backup of DB before alterations (only works with non-interactive mode, -n)
 	-s simulate		Create SQL file that would be executed for examination
 	-e email		Email address to receive partition update report (default: $EMAIL)
 
@@ -86,14 +87,15 @@ DBUSER=zabbix
 DBPASS=zabbix
 SIMULATE=0
 NONINTERACTIVE=0
-while getopts "m:nse:h:u:p:d:y:?h" flag; do
+while getopts "m:nseb:h:u:p:d:y:?h" flag; do
 	case $flag in
-		h)	DBHOST=$OPTARG ;;
-		u)	DBUSER=$OPTARG ;;
-		p)	DBPASS=$OPTARG ;;
-		e)	EMAIL=$OPTARG  ;;
-		s)	SIMULATE=1  ;;
+		h)	DBHOST=$OPTARG    ;;
+		u)	DBUSER=$OPTARG    ;;
+		p)	DBPASS=$OPTARG    ;;
+		e)	EMAIL=$OPTARG     ;;
+		s)	SIMULATE=1        ;;
 		n)	NONINTERACTIVE=1  ;;
+		b)	BACKUP=1          ;;
 		d)	h=$OPTARG
 			if [ $h -gt 0 ] 2>/dev/null; then
 				daily_history_min=$h
@@ -133,10 +135,12 @@ if [ $SIMULATE = 0 ]; then
 		mysql -B -h $DBHOST -e "GRANT CREATE ROUTINE ON zabbix.* TO '$DBUSER'@'localhost';"
 #		echo "GRANT LOCK TABLES ON zabbix.* TO '${DBUSER}'@'${DBHOST}' IDENTIFIED BY '${DBPASS}';" | mysql -h${DBHOST} -u${DBADMINUSER} --password=${DBADMINPASS}
                 mysql -h $DBHOST -e "GRANT LOCK TABLES ON zabbix.* TO '$DBUSER'@'$DBHOST' IDENTIFIED BY '$DBPASS';"
-		mysqldump --opt -h $DBHOST -u $DBUSER -p$DBPASS zabbix --result-file=$DUMP_FILE
-		rc=$?
-		if [ $rc -ne 0 ]; then
-			echo "Error during mysqldump, exit code: $rc"
+		if [ $BACKUP = 1 ]
+			mysqldump --opt -h $DBHOST -u $DBUSER -p$DBPASS zabbix --result-file=$DUMP_FILE
+			rc=$?
+			if [ $rc -ne 0 ]; then
+				echo "Error during mysqldump, exit code: $rc"
+			fi
 		fi
 	else
 		echo -e "\nReady to update permissions of Zabbix user to create routines\n"
