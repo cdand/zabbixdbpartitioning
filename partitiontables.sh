@@ -201,7 +201,9 @@ IDS="$DAILY_IDS $MONTHLY_IDS"
 echo "Use zabbix;  SELECT 'Altering tables';" >$SQL
 cnt=0
 for i in $TABLES; do
-	echo "Altering table: $i"
+	if [ $NONINTERACTIVE != 1 ]; then
+		echo "Altering table: $i"
+	fi
 	echo "SELECT '$i';" >>$SQL
 	cnt=$((cnt+1))
 	case $i in
@@ -224,7 +226,9 @@ done
 echo -en "\n"
 echo -en "\n" >>$SQL
 for i in $MONTHLY; do
-	echo "Creating monthly partitions for table: $i"
+	if [ $NONINTERACTIVE != 1 ]; then
+		echo "Creating monthly partitions for table: $i"
+	fi
 	echo "SELECT '$i';" >>$SQL
 	echo "ALTER TABLE $i PARTITION BY RANGE( clock ) (" >>$SQL
 	for y in `seq $first_year $last_year`; do
@@ -244,7 +248,9 @@ done
 
 echo -en "\n"
 for i in $DAILY; do
-	echo "Creating daily partitions for table: $i"
+	if [ $NONINTERACTIVE != 1 ]; then
+		echo "Creating daily partitions for table: $i"
+	fi
 	echo "SELECT '$i';" >>$SQL
 	echo "ALTER TABLE $i PARTITION BY RANGE( clock ) (" >>$SQL
 	for d in `seq -$daily_history_min 2`; do
