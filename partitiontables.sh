@@ -88,7 +88,7 @@ DBPASS=zabbix
 SIMULATE=0
 NONINTERACTIVE=0
 BACKUP=0
-while getopts "m:nseb:h:u:p:d:y:?h" flag; do
+while getopts "m:nsbe:h:u:p:d:y:?h" flag; do
 	case $flag in
 		h)	DBHOST=$OPTARG    ;;
 		u)	DBUSER=$OPTARG    ;;
