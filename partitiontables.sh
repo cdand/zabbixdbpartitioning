@@ -205,13 +205,17 @@ MONTHLY_IDS=""
 TABLES="$DAILY $MONTHLY"
 IDS="$DAILY_IDS $MONTHLY_IDS"
 
-echo "Use zabbix;  SELECT 'Altering tables';" >$SQL
+if [ $NONINTERACTIVE != 1 ]; then
+	echo "Use zabbix;  SELECT 'Altering tables';" >$SQL
+else
+	echo "Use zabbix;" >$SQL
+fi
 cnt=0
 for i in $TABLES; do
 	if [ $NONINTERACTIVE != 1 ]; then
 		echo "Altering table: $i"
+		echo "SELECT '$i';" >>$SQL
 	fi
-	echo "SELECT '$i';" >>$SQL
 	cnt=$((cnt+1))
 	case $i in
 		history_log)
