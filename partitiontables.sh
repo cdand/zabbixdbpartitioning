@@ -239,8 +239,8 @@ echo -en "\n" >>$SQL
 for i in $MONTHLY; do
 	if [ $NONINTERACTIVE != 1 ]; then
 		echo "Creating monthly partitions for table: $i"
+		echo "SELECT '$i';" >>$SQL
 	fi
-	echo "SELECT '$i';" >>$SQL
 	echo "ALTER TABLE $i PARTITION BY RANGE( clock ) (" >>$SQL
 	for y in `seq $first_year $last_year`; do
 		last_month=12
@@ -261,8 +261,8 @@ echo -en "\n"
 for i in $DAILY; do
 	if [ $NONINTERACTIVE != 1 ]; then
 		echo "Creating daily partitions for table: $i"
+		echo "SELECT '$i';" >>$SQL
 	fi
-	echo "SELECT '$i';" >>$SQL
 	echo "ALTER TABLE $i PARTITION BY RANGE( clock ) (" >>$SQL
 	for d in `seq -$daily_history_min 2`; do
 		ds=`date +"%Y-%m-%d" -d "$d day +1 day"`
