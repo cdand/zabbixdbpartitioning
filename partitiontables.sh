@@ -175,15 +175,16 @@ if [ $SIMULATE = 0 ]; then
 	fi
 fi
 
-echo -e "\n\nReady to proceed:"
-	
-echo -e "\nStarting yearly partioning at: $first_year"
-echo "and ending at: $last_year"
-echo "With $daily_history_min days of daily history"
-echo -e "\n\nReady to proceed (Y/n): "
-read yn
-[ "$yn" = 'n' -o "$yn" = "N" ] && exit
+if [ $NONINTERACTIVE = 1 ]; then
+	echo -e "\n\nReady to proceed:"
 
+	echo -e "\nStarting yearly partioning at: $first_year"
+	echo "and ending at: $last_year"
+	echo "With $daily_history_min days of daily history"
+	echo -e "\n\nReady to proceed (Y/n): "
+	read yn
+	[ "$yn" = 'n' -o "$yn" = "N" ] && exit
+fi
 
 
 DAILY="history history_log history_str history_text history_uint"
