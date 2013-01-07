@@ -40,6 +40,10 @@ fi
 
 y=`date +"%Y"`
 
+SQL="/tmp/partition.sql"
+PATHTOCRON="/usr/local/zabbix/cron.d/"
+DUMP_FILE=/tmp/zabbix.sql
+
 function usage {
 cat <<_EOF_
 
@@ -72,16 +76,13 @@ you didn't have the script disable it, and add the following cronjob
 
 Cron job
 
-0 0 * * *  /etc/zabbix/cron.d/housekeeping.sh
+0 0 * * *  $PATHTOCRON/housekeeping.sh
 
 
 _EOF_
 	exit
 }
 
-SQL="/tmp/partition.sql"
-
-DUMP_FILE=/tmp/zabbix.sql
 DBHOST=localhost
 DBUSER=zabbix
 DBPASS=zabbix
@@ -492,8 +493,8 @@ if [ "$yn" != "n" -a "$yn" != "N" ]; then
 		read mailto
 	fi
 	[ "$mailto" = "" ] && mailto=$EMAIL
-	mkdir -p /etc/zabbix/cron.d
-	cat >/etc/zabbix/cron.d/housekeeping.sh <<_EOF_
+	mkdir -p $PATHTOCRON
+	cat >$PATHTOCRON/housekeeping.sh <<_EOF_
 #!/bin/bash
 
 MAILTO=$mailto
@@ -504,18 +505,18 @@ date >\$tmpfile
 /bin/mail -s "Zabbix MySql Partition Housekeeping" \$MAILTO <\$tmpfile
 rm -f \$tmpfile
 _EOF_
-	chmod +x /etc/zabbix/cron.d/housekeeping.sh
-	chown -R zabbix.zabbix /etc/zabbix
+	chmod +x $PATHTOCRON/housekeeping.sh
+	chown -R zabbix.zabbix /usr/local/zabbix
 	if [ "$where" = "Y" ]; then
 		cat >/etc/cron.daily/zabbixhousekeeping <<_EOF_
 #!/bin/bash
-/etc/zabbix/cron.d/housekeeping.sh
+$PATHTOCRON/housekeeping.sh
 _EOF_
 		chmod +x /etc/cron.daily/zabbixhousekeeping
 	else
 		crontab -l >$tmpfile
 		cat >>$tmpfile <<_EOF_
-0 0 * * *  /etc/zabbix/cron.d/housekeeping.sh
+0 0 * * *  $PATHTOCRON/housekeeping.sh
 _EOF_
 		crontab $tmpfile
 		rm $tmpfile
