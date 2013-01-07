@@ -56,8 +56,8 @@ $0	[-h host][-u user][-p password][-d min_days][-y startyear][-n][-s][-e email_a
 	-m min_months		Minimum number of months to keep trends (default: $monthly_history_min)
 	-y startyear		First year to set up with partitions
 	-n noninteractive	Run without questions - careful, make sure you know what is going to happen. Needs my.cnf with correct permissions.
-	-b backup		Create backup of DB before alterations (only works with non-interactive mode, -n)
-	-s simulate		Create SQL file that would be executed for examination
+	-b backup		Create backup of DB in $DUMP_FILE before alterations (only works with non-interactive mode, -n)
+	-s simulate		Create SQL file that would be executed for examination ($SQL)
 	-e email		Email address to receive partition update report (default: $EMAIL)
 
 
