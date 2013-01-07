@@ -129,8 +129,9 @@ echo "Ready to partition tables."
 if [ $SIMULATE = 0 ]; then
 	if [ $NONINTERACTIVE = 1 ]; then
 		mysql -B -h $DBHOST -e "GRANT CREATE ROUTINE ON zabbix.* TO '$DBUSER'@'localhost';"
-		echo "GRANT LOCK TABLES ON zabbix.* TO '${DBUSER}'@'${DBHOST}' IDENTIFIED BY '${DBPASS}';" | mysql -h${DBHOST} -u${DBADMINUSER} --password=${DBADMINPASS}
-		mysqldump --opt -h ${DBHOST} -u ${DBUSER} -p${DBPASS} zabbix --result-file=${DUMP_FILE}
+#		echo "GRANT LOCK TABLES ON zabbix.* TO '${DBUSER}'@'${DBHOST}' IDENTIFIED BY '${DBPASS}';" | mysql -h${DBHOST} -u${DBADMINUSER} --password=${DBADMINPASS}
+                mysql -h $DBHOST -e "GRANT LOCK TABLES ON zabbix.* TO '$DBUSER'@'$DBHOST' IDENTIFIED BY '$DBPASS';"
+		mysqldump --opt -h $DBHOST -u $DBUSER -p$DBPASS zabbix --result-file=$DUMP_FILE
 		rc=$?
 		if [ $rc -ne 0 ]; then
 			echo "Error during mysqldump, exit code: $rc"
