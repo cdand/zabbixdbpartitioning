@@ -176,6 +176,8 @@ if [ $SIMULATE = 0 ]; then
 fi
 
 if [ $NONINTERACTIVE = 1 ]; then
+	$yn = 'y'
+else
 	echo -e "\n\nReady to proceed:"
 
 	echo -e "\nStarting yearly partioning at: $first_year"
