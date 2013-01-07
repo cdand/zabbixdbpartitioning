@@ -277,9 +277,13 @@ done
 
 
 ###############################################################
-cat >>$SQL <<_EOF_
+if [ $NONINTERACTIVE != 1 ]; then
+	cat >>$SQL <<_EOF_
 SELECT "Installing procedures";
+_EOF_
+fi
 
+cat >>$SQL <<_EOF_
 /**************************************************************
   MySQL Auto Partitioning Procedure for Zabbix 1.8
   http://zabbixzone.com/zabbix/partitioning-tables/
