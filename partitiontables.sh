@@ -448,7 +448,7 @@ if [ "$yn" != "n" -a "$yn" != "N" ]; then
 	sed  -i "s/^DisableHousekeeping=0/DisableHousekeeping=1/" $conf
 	/etc/init.d/zabbix-server stop
 	sleep 5
-	/etc/init.d/zabbix-server start 2> /dev/null
+	/etc/init.d/zabbix-server start 2>&1 > /dev/null
 fi
 
 tmpfile=/tmp/cron$$
