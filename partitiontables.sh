@@ -476,9 +476,11 @@ if [ "$yn" != "n" -a "$yn" != "N" ]; then
 		fi
 	done
 
-	echo -en "\nEnter email of who should get the daily housekeeping reports: "
-	read mailto
-	[ "$mailto" = "" ] && mailto=root
+	if [ $NONINTERACTIVE != 1 ]; then
+		echo -en "\nEnter email of who should get the daily housekeeping reports: "
+		read mailto
+	fi
+	[ "$mailto" = "" ] && mailto=$EMAIL
 	mkdir -p /etc/zabbix/cron.d
 	cat >/etc/zabbix/cron.d/housekeeping.sh <<_EOF_
 #!/bin/bash
