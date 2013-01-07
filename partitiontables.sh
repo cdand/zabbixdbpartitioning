@@ -135,7 +135,7 @@ if [ $SIMULATE = 0 ]; then
 		mysql -B -h $DBHOST -e "GRANT CREATE ROUTINE ON zabbix.* TO '$DBUSER'@'localhost';"
 #		echo "GRANT LOCK TABLES ON zabbix.* TO '${DBUSER}'@'${DBHOST}' IDENTIFIED BY '${DBPASS}';" | mysql -h${DBHOST} -u${DBADMINUSER} --password=${DBADMINPASS}
                 mysql -h $DBHOST -e "GRANT LOCK TABLES ON zabbix.* TO '$DBUSER'@'$DBHOST' IDENTIFIED BY '$DBPASS';"
-		if [ $BACKUP = 1 ]
+		if [ $BACKUP = 1 ]; then
 			mysqldump --opt -h $DBHOST -u $DBUSER -p$DBPASS zabbix --result-file=$DUMP_FILE
 			rc=$?
 			if [ $rc -ne 0 ]; then
