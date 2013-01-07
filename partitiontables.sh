@@ -41,7 +41,7 @@ fi
 y=`date +"%Y"`
 
 SQL="/tmp/partition.sql"
-PATHTOCRON="/usr/local/zabbix/cron.d/"
+PATHTOCRON="/usr/local/zabbix/cron.d"
 DUMP_FILE=/tmp/zabbix.sql
 
 function usage {
