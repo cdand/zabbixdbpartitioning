@@ -42,6 +42,7 @@ y=`date +"%Y"`
 
 SQL="/tmp/partition.sql"
 PATHTOCRON="/usr/local/zabbix/cron.d"
+PATHTOMAILBIN="/usr/bin/mail"
 DUMP_FILE=/tmp/zabbix.sql
 
 function usage {
@@ -502,7 +503,7 @@ tmpfile=/tmp/housekeeping\$\$
 
 date >\$tmpfile
 /usr/bin/mysql --skip-column-names -B -h localhost -u zabbix -pzabbix zabbix -e "CALL create_zabbix_partitions();" >>\$tmpfile 2>&1
-/bin/mail -s "Zabbix MySql Partition Housekeeping" \$MAILTO <\$tmpfile
+$PATHTOMAILBIN -s "Zabbix MySql Partition Housekeeping" \$MAILTO <\$tmpfile
 rm -f \$tmpfile
 _EOF_
 	chmod +x $PATHTOCRON/housekeeping.sh
