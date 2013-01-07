@@ -431,11 +431,10 @@ fi
 if [ $NONINTERACTIVE = 1 ]; then
 	yn='y'
 else
-	echo -e "\n\nReady to apply script to database (Y/n): "
+	echo -e "\n\nReady to apply script to database, this may take a while.(Y/n): "
 	read yn
 fi
 if [ "$yn" != "n" -a "$yn" != "N" ]; then
-	echo -en "\nProceeding, please wait.  This may take a while\n\n"
 	mysql --skip-column-names -h ${DBHOST} -u ${DBUSER} -p${DBPASS} <$SQL
 fi
 
