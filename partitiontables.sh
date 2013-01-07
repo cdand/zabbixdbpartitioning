@@ -234,7 +234,7 @@ for i in $TABLES; do
 			;;
 	esac
 done
-echo -en "\n"
+
 echo -en "\n" >>$SQL
 for i in $MONTHLY; do
 	if [ $NONINTERACTIVE != 1 ]; then
@@ -257,7 +257,6 @@ for i in $MONTHLY; do
 	echo ");" >>$SQL
 done
 
-echo -en "\n"
 for i in $DAILY; do
 	if [ $NONINTERACTIVE != 1 ]; then
 		echo "Creating daily partitions for table: $i"
