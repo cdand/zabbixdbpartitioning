@@ -423,17 +423,25 @@ if [ $SIMULATE = 1 ]; then
 	exit 0
 fi
 
-echo -e "\n\nReady to apply script to database (Y/n): "
-read yn
+if [ $NONINTERACTIVE = 1 ]; then
+	yn='y'
+else
+	echo -e "\n\nReady to apply script to database (Y/n): "
+	read yn
+fi
 if [ "$yn" != "n" -a "$yn" != "N" ]; then
 	echo -en "\nProceeding, please wait.  This may take a while\n\n"
 	mysql --skip-column-names -h ${DBHOST} -u ${DBUSER} -p${DBPASS} <$SQL
 fi
 
 conf=/etc/zabbix/zabbix_server.conf
-echo -e "\nDo you want to update the /etc/zabbix/zabbix_server.conf"
-echo -n "to disable housekeeping (Y/n): "
-read yn
+if [ $NONINTERACTIVE = 1 ]; then
+	yn='y'
+else
+	echo -e "\nDo you want to update the /etc/zabbix/zabbix_server.conf"
+	echo -n "to disable housekeeping (Y/n): "
+	read yn
+fi
 if [ "$yn" != "n" -a "$yn" != "N" ]; then
 	cp $conf ${conf}.bak
 	sed  -i "s/^# DisableHousekeeping=0/DisableHousekeeping=1/" $conf
@@ -444,15 +452,23 @@ if [ "$yn" != "n" -a "$yn" != "N" ]; then
 fi
 
 tmpfile=/tmp/cron$$
-echo -ne "\nDo you want to update the crontab (Y/n): "
-read yn
+if [ $NONINTERACTIVE = 1 ]; then
+	yn='y'
+else
+	echo -ne "\nDo you want to update the crontab (Y/n): "
+	read yn
+fi
 if [ "$yn" != "n" -a "$yn" != "N" ]; then
 	where=
 	while [ "$where" = "" ]; do
-		echo "The crontab entry can be either in /etc/cron.daily, or added"
-		echo -e "to the crontab for root\n"
-		echo -n "Do you want to add this to the /etc/cron.daily directory (Y/n): "
-		read where
+		if [ $NONINTERACTIVE = 1 ]; then
+			where='Y'
+		else
+			echo "The crontab entry can be either in /etc/cron.daily, or added"
+			echo -e "to the crontab for root\n"
+			echo -n "Do you want to add this to the /etc/cron.daily directory (Y/n): "
+			read where
+		fi
 		[ "$where" = "" -o "$where" = "y" ] && where="Y"
 		if [ "$where" != "y" -a "$where" != "Y" -a "$where" != "n" -a "$where" != "N" ]; then
 			where=""
