@@ -124,7 +124,9 @@ while getopts "m:nse:h:u:p:d:y:?h" flag; do
 done
 shift $((OPTIND-1))
 
-echo "Ready to partition tables."
+if [ $NONINTERACTIVE != 1 ]; then
+	echo "Ready to partition tables."
+fi
 
 if [ $SIMULATE = 0 ]; then
 	if [ $NONINTERACTIVE = 1 ]; then
