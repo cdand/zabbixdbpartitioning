@@ -246,7 +246,7 @@ for i in $MONTHLY; do
 	echo "ALTER TABLE $i PARTITION BY RANGE( clock ) (" >>$SQL
 	for y in `seq $first_year $last_year`; do
 		last_month=12
-		[ $y -eq $last_year ] && last_month=$((cur_month+1))
+		[ $y -eq $last_year ] && last_month=$((10#$cur_month+1))
 		for m in `seq 1 $last_month`; do
 			[ $m -lt 10 ] && m="0$m"
 			ms=`date +"%Y-%m-01" -d "$m/01/$y +1 month"`
